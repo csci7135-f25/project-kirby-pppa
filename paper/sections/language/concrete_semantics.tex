@@ -1,0 +1,356 @@
+\section{Concrete Semantics for \lang Protocols and Adversaries}
+\label{sec:concrete-semantics}
+The semantics of the language is given as separate operational semantics for protocol definitions (Section~\ref{subsec:definition-semantics}), bodies (Section~\ref{subsec:proto-body-semantics}), statements (Section~\ref{subsec:statement-semantics}), and expressions.
+The evaluation of a protocol conceptually occurs in two different phases: initialization and execution.
+First, during initialization, protocol definitions and bodies are evaluated to produce the initial state for the system.
+The protocol definition and body semantics are only relevant for initialization.
+Second, during execution, the system non-deterministically executes either a protocol handler or an adversary action.
+Protocol handlers are atomic, and either fully execute or do not execute at all.
+The system semantics, which include the combined protocol and adversary semantics, are given denotationally as a labeled transition system in Figure~\ref{fig:system-semantics}, where the labels indicate the interaction or observable effect from the transition.
+Non-termination is only captured at the system level since the protocol semantics are all given in a big-step style to a new state.
+We further describe each of the semantics below.
+
+\subsection{Protocol Definition Semantics (Figure~\ref{fig:proto-definition-semantics})}
+\label{subsec:definition-semantics}
+
+\begin{figure}[ht]
+  % Protocol definition semantics
+  \fbox{$\Gamma, d \protodefeval \Gamma'$} \\
+  \begin{mathpar}
+    \Gamma \in Variables \rightharpoonup Variables^* \times ProtocolBodies
+    \\
+
+    \RULE {Def}
+    { }
+    {
+      \Gamma, \DYActMath{protocol} ~ x ~ (\lst{x'}) := \{ p \} \protodefeval
+      \Gamma [ x \mapsto (\lst{x'}, p)]
+    }
+
+    \RULE {DefSeq}
+    {
+      \Gamma, d \protodefeval \Gamma' \\
+      \Gamma', d' \protodefeval \Gamma''
+    }
+    {
+      \Gamma, d; d' \protodefeval \Gamma''
+    }
+
+  \end{mathpar}
+  \caption{Protocol Definition Semantics}
+  \label{fig:proto-definition-semantics}
+\end{figure}
+
+Protocol definitions enable protocol reuse and composition by allowing protocols to be instantiated as sub-protocols within other protocols.
+For example, a one-way confidential communication protocol may be defined as a protocol, then instantiated twice as sub-protocols to allow for bidirectional confidential communication.
+
+Protocol definitions simply associate a protocol body $p$ with a name $x$ and list of parameters $\lst{x'}$.
+The \rulelabel{Def} rule then stores the argument names and body along with the protocol's name in the top-level environment $\Gamma$.
+$\Gamma$ can be used to look up defined protocols for invocation as a sub-protocol.
+The protocol body is not interpreted until the protocol is instantiated with a sequence of arguments, ensuring the body is executed with the correct arguments.
+
+\subsection{Protocol Body Semantics (Figure~\ref{fig:proto-body-semantics})}
+\label{subsec:proto-body-semantics}
+
+\begin{figure}[ht]
+  % Protocol body semantics
+  \fbox{$\Gamma, \mathcal{C} \vdash (\sigma, p) \protoeval \delta, \Sigma, \pi$}
+  \quad
+  \fbox{$\Gamma, \mathcal{C} \vdash (\sigma, p) \protoeval (\alpha, \kappa), (\sigma', \lst{\Sigma_\mu}), (H, \lst{\pi_\mu})$}
+
+  \begin{mathpar}
+    LocalState = Variables \rightharpoonup Values
+    \qquad
+    ProtocolState = LocalState \times ProtocolState^*
+    \\
+    Handlers = Statements \times Expressions \times Statements
+    \qquad
+    Protocols = \powerset(Handlers) \times Protocols^*
+    \\
+    \Gamma \in Variables \rightharpoonup Variables^* \times ProtocolBodies
+    \qquad \mathcal{C} \subseteq Values
+    \qquad \delta \in Effects^* \times Values^*
+    \\ \sigma \in LocalState
+    \qquad \Sigma \in ProtocolState
+    \qquad H \subseteq Handlers
+    \qquad \pi \in Protocols
+    \\
+
+    \RULE {ProtoStmt}
+    {
+      % TODO(klinvill): What should be done with the new state here, `\sigma'`?  Specifically, where should fresh values be drawn from, if from any piece of state?
+      \mathcal{C} \vdash \langle \emptyset, \sigma, \emptyset, s \rangle \stmteval \langle \emptyset, \sigma', \delta, v \rangle
+    }
+    {
+      \Gamma, \mathcal{C} \vdash (\sigma, s) \protoeval \delta, (\sigma', \emptyset), (\emptyset, \emptyset)
+    }
+    \\
+
+    \RULE {Handler}
+    { }
+    {
+      \Gamma, \mathcal{C} \vdash (\sigma,~ \DYActMath{handler} ~ x ~ \DYActMath{on} ~ s ~ \DYActMath{when} ~ e ~ \DYActMath{do} ~ s')
+      \protoeval
+      (\sigma, \emptyset), (\{ (s, e, s') \}, \emptyset)
+    }
+    \\
+
+    \RULE {Sub-protocol}
+    {
+      \langle \sigma, \lst{e} \rangle \expreval \lst{v} \\
+      \Gamma [x] = (\lst{x'}, p_\mu) \\
+      \Gamma, \mathcal{C} \vdash (\emptyset [\lst{x'} \mapsto \lst{v}], p_\mu) \protoeval \delta_\mu, \Sigma_\mu, \pi_\mu
+    }
+    {
+      \Gamma, \mathcal{C} \vdash (\sigma,~ \DYActMath{run} ~x ~(\lst{e}))
+      \protoeval
+      \delta_\mu, (\sigma, [\Sigma_\mu]), (\emptyset, [\pi_\mu])
+    }
+    \\
+
+    \RULE {ProtoSeq}
+    {
+      \Gamma \vdash, \mathcal{C} (\sigma, p) \protoeval (\alpha', \kappa'), (\sigma', \lst{\Sigma_\mu}'), (H', \lst{\pi_\mu}') \\
+      \Gamma \vdash, \mathcal{C} (\sigma', p') \protoeval (\alpha'', \kappa''), (\sigma'', \lst{\Sigma_\mu}''), (H'', \lst{\pi_\mu}'')
+    }
+    {
+      \Gamma \vdash, \mathcal{C} (\sigma, p; p')
+      \protoeval
+      (\alpha' \lconcat \alpha'', \kappa' \lconcat \kappa''), (\sigma'', \lst{\Sigma_\mu}' \lconcat \lst{\Sigma_\mu}''), (H' \cup H'', \lst{\pi_\mu}' \lconcat \lst{\pi_\mu}'')
+    }
+
+  \end{mathpar}
+  \caption{Protocol Body Semantics}
+  \label{fig:proto-body-semantics}
+\end{figure}
+
+When a protocol is instantiated with an appropriate number of arguments, the protocol body is then executed to generate a tuple of the form $((\alpha, \kappa), (\sigma, \lst{\Sigma_\mu}), (H, \lst{\pi_\mu}))$ where $\sigma$ is the internal state for this protocol, $\lst{\Sigma_\mu}$ is the list of states for each sub-protocol, $H$ is the set of handlers defined in this protocol, $\lst{\pi_\mu}$ is the list of sub-protocol handlers, and $\alpha$ and $\kappa$ are the sequences of observable effects and values emitted to the adversary that are produced by the statement semantics (Section~\ref{subsec:statement-semantics}).
+The internal states are simply a partial map from variables to values.
+The handlers are represented as a tuple of the trigger statement $s$, enabling condition $e$, and action statement $s'$.
+These handlers are only interpreted later during system execution.
+We alternatively refer to the tuple $(\sigma, \lst{\Sigma_\mu})$ as the protocol state $\Sigma$,  the tuple $(H, \lst{\pi_\mu})$ as the protocol $\pi$, and the tuple $(\alpha, \kappa)$ as the effects $\delta$.
+The body semantics are defined with respect to a definition environment $\Gamma$, which maps protocol variables to their parameter lists and bodies, and a set of external channels $\mathcal{C}$ that is used by the statement semantics introduced in Section~\ref{subsec:statement-semantics}.
+
+Both the protocol state $\Sigma$ and protocol $\pi$ are recursively defined, containing both the local state/handlers defined in the protocol alongside those of its sub-protocols.
+Conceptually, protocols and sub-protocols operate on their own respective internal states, providing encapsulation and disambiguation in the case of clashing variable names between sub-protocols.
+Values can be passed to sub-protocols via parameters at instantiation.
+The body is executed only once for each protocol instance: when the protocol is instantiated.
+
+Statements in the body (rule \rulelabel{ProtoStmt}), along with the arguments to the protocol (rule \rulelabel{Sub-protocol}), are used to generate the initial protocol state.
+Handler definitions are preserved as-is in the protocol value (rule \rulelabel{Handler}) for later interpretation.
+Specifically, a handler's trigger statement $s$, enabling expression $e$, and action statement $s'$ are packaged into the tuple $(s, e, s')$.
+Sub-protocol values are defined by recursive application of the protocol body semantics (rule \rulelabel{Sub-protocol}).
+The arguments and body for the sub-protocol are found in the top-level environment $\Gamma$.
+Notably, the initial state for the sub-protocols consists only of the arguments to the sub-protocol.
+Variables cannot be implicitly inherited from a parent's scope.
+
+Note that the \DYAct{run} command is used to compose different protocols together.
+Protocols parameterized by channels can then have their channels connected by instantiating the protocols with the same value for their connected channels.
+For example, connecting the $io$ channel of $P(io, net)$ with the $net$ channel of $Q(io, net)$, can be done by the protocol body $c := \DYActMath{fresh}; ~\DYActMath{run} ~P (c, net); ~\DYActMath{run} ~Q (io, c)$.
+
+Sequential composition of protocol bodies is carried out by propagating the state changes ($\sigma$ to $\sigma''$), and by separately computing the local handlers $H$, sub-protocol states $\lst{\Sigma}_\mu$, and sub-protocols $\lst{\pi_\mu}$ before unioning the handlers and concatenating the lists together.
+Intuitively, handlers are represented as sets because they all operate on the same state, so duplicate handlers will always offer the same possible transitions.
+Duplicates can therefore be eliminated without a loss of generality.
+In contrast, sub-protocols all have their own independent pieces of state.
+Duplicate sub-protocol values could evolve to different states, thus presenting different possible transitions.
+Since we cannot soundly eliminate duplicate sub-protocols, we track lists of sub-protocols in order to preserve duplicates.
+Lists also allow for keeping track of sub-protocol state and handlers by using the same index.
+
+\subsection{Statement Semantics (Figure~\ref{fig:statement-semantics})}
+\label{subsec:statement-semantics}
+
+\begin{figure}[ht]
+  % Statement semantics
+  \fbox{$\mathcal{C} \vdash \langle N, \sigma, \delta, s \rangle \stmteval \langle N', \sigma', \delta', v \rangle$}
+  \begin{mathpar}
+    \\ Networks = Values \mapsto \Bag(Values)
+    \qquad ProtoState = Variables \rightharpoonup Values
+    \\ \mathcal{C} \subseteq Values
+    \qquad N \in Networks
+    \qquad \sigma \in ProtoState
+    \qquad \delta \in Effects^* \times Values^*
+    \\
+
+    \RULE {SendExternal}
+    {
+      \langle \sigma, e \rangle \expreval v \\
+      \langle \sigma, e' \rangle \expreval c \\
+      c \in \mathcal{C}
+    }
+    {
+      \mathcal{C} \vdash \langle N, \sigma, (\alpha, \kappa), \DYActMath{send} ~e ~e' \rangle \stmteval \langle N, \sigma, (\alpha \lconcat [c], \kappa \lconcat [v]), \epsilon \rangle
+    }
+    \\
+
+    \RULE {SendInternal}
+    {
+      \langle \sigma, e \rangle \expreval v \\
+      \langle \sigma, e' \rangle \expreval c \\
+      c \not\in \mathcal{C}
+    }
+    {
+      \mathcal{C} \vdash \langle N, \sigma, \delta, \DYActMath{send} ~e ~e' \rangle \stmteval \langle N [c \mapsto N[c] + \{ v \}], \sigma, \delta, \epsilon \rangle
+    }
+    \\
+
+    \RULE {Receive}
+    {
+      \langle \sigma, e \rangle \expreval c \\
+      v \in N[c]
+    }
+    {
+      \mathcal{C} \vdash \langle N, \sigma, \delta, \DYActMath{receive} ~e \rangle \stmteval \langle N [c \mapsto N[c] - \{ v \}], \sigma, \delta, v \rangle
+    }
+    \\
+
+    \RULE {Fresh}
+    {
+      fresh ~ v
+    }
+    {
+      \mathcal{C} \vdash \langle N, \sigma, \delta, \DYActMath{fresh} \rangle \stmteval \langle N, \sigma, \delta, v \rangle
+    }
+    \\
+
+    \RULE {Seq}
+    {
+      \mathcal{C} \vdash \langle N, \sigma, \delta, s \rangle \stmteval \langle N', \sigma', \delta', v \rangle \\
+      \mathcal{C} \vdash \langle N', \sigma', \delta', s' \rangle \stmteval \langle N'', \sigma'', \delta'', v' \rangle
+    }
+    {
+      \mathcal{C} \vdash \langle N, \sigma, \delta, s \rangle \stmteval \langle N'', \sigma'', \delta'', v' \rangle
+    }
+    \\
+
+    \RULE {Assign}
+    {
+      \mathcal{C} \vdash \langle N, \sigma, \delta, s \rangle \stmteval \langle N', \sigma', \delta', v \rangle
+    }
+    {
+      \mathcal{C} \vdash \langle N, \sigma, \delta, x := s \rangle \stmteval \langle N', \sigma'[x \mapsto v], \delta', \epsilon \rangle
+    }
+    \\
+
+  \end{mathpar}
+  \caption{Statement Semantics}
+  \label{fig:statement-semantics}
+\end{figure}
+
+Statements may be executed either as part of protocol initialization (Section~\ref{subsec:proto-body-semantics}) or in a handler during system execution (Section~\ref{subsec:system-semantics}).
+The statement semantics are given as the big-step judgment $\mathcal{C} \vdash \langle N, \sigma, \delta, s \rangle \stmteval \langle N', \sigma', \delta', v \rangle$.
+This judgement represents a protocol statement $s$ executing with protocol state $\sigma$, shared network state $N$, effects $\delta$, and external channels $\mathcal{C}$.
+Sequential composition (rule \rulelabel{Seq}) and variable assignment (rule \rulelabel{Assign}) are standard for effectful statements.
+The main interesting semantics are those that concern interacting with the network and generating fresh values.
+
+Sending a message over an external channel (rule \rulelabel{SendExternal}) does not change the shared network state $N$, but rather adds the sent message and channel to the effects $\delta$, which later get added to the adversary's knowledge when constructing the system semantics (Section~\ref{subsec:system-semantics}).
+The effects are then visible to an external adversary which may opt to add the observed sent message to the network, or may opt to ignore it, in effect intercepting or dropping the message.
+Sending a message over an internal (i.e. not external) channel instead directly adds the message to the shared network, modeling communication that is hidden and uncontrolled by the adversary (rule \rulelabel{SendInternal}).
+The network state consists of a map from channels to bags of messages.
+Receiving a message over a channel is then non-deterministic, as any message in the channel may be received (rule \rulelabel{Receive}).
+Note that receiving a message is only possible if there is at least one message in the channel; effectively modeling statements that block until enough messages are available to execute all receive statements in the handler.
+
+Protocols should be able to generate values that are unknown to the adversary in order to model operations like random sampling that are common in cryptographic protocols.
+In \lang this modeled by the \rulelabel{Fresh} rule, that describes the generation of fresh values.
+It does not prescribe a method for generating fresh values, but instead just requires that the generated values be fresh (i.e. unused anywhere else in the protocols and adversary).
+
+\subsection{Adversary-Controlled System Semantics (Figure~\ref{fig:system-semantics})}
+\label{subsec:system-semantics}
+
+\begin{figure}[ht]
+  % Adversary-controlled system semantics
+  \fbox{$\mathcal{C}, \mathcal{A}, \pi \vdash \langle \alpha, \kappa, N, \Sigma \rangle \systemstep \langle \alpha', \kappa,' N', \Sigma' \rangle$}
+  \quad
+  \fbox{$\mathcal{C}, \mathcal{A}, (H, \lst{\pi_\mu}) \vdash \langle \alpha, \kappa, N, (\sigma, \lst{\Sigma_\mu}) \rangle \systemstep \langle \alpha', \kappa', N', (\sigma', \lst{\Sigma_\mu}') \rangle$}
+  \begin{mathpar}
+    \\ Networks = Values \rightharpoonup \Bag(Values)
+    \qquad ProtoState = Variables \rightharpoonup Values
+    \\ Handlers = Statements \times Predicates \times Statements
+    \\ Protocols = ProtoState \times \powerset(Handlers) \times \Bag(Protocols)
+    \\ \mathcal{C} \subseteq Values
+    \qquad \mathcal{A} \subseteq Values^* \rightharpoonup Values
+    \qquad \alpha \in Effects^*
+    \\
+    \kappa \in Values^*
+    \qquad N \in Networks
+    \qquad \pi \in Protocols
+    \\
+
+    \RULE {ExecHandler}
+    {
+      (s, e, s') \in H \\
+      \mathcal{C} \vdash \langle N, \sigma, [], s \rangle \stmteval \langle N', \sigma', \delta', v \rangle \\
+      \langle \sigma', e \rangle \expreval \top \\
+      \mathcal{C} \vdash \langle N', \sigma', \delta', s' \rangle \stmteval \langle N'', \sigma'', \delta'', v' \rangle \\
+      \delta'' = (\alpha_\delta'', \kappa_\delta'')
+    }
+    {
+      \mathcal{C}, \mathcal{A}, (H, \lst{\pi_\mu}) \vdash
+      \langle \alpha, \kappa, N, (\sigma, \lst{\Sigma_\mu}) \rangle
+      \systemstep
+      \langle {
+        \alpha \lconcat \alpha_\delta'',
+        \kappa \lconcat \kappa_\delta'',
+        N'',
+        (\sigma'', \lst{\Sigma_\mu})
+      } \rangle
+    }
+    \\
+
+    \RULE {ExecSubprocess}
+    {
+      i \in \domain{\lst{\pi_\mu}} \\
+      \mathcal{C}, \mathcal{A}, \lst{\pi_\mu}[i] \vdash \langle \alpha, \kappa, N, \lst{\Sigma_\mu}[i] \rangle \systemstep \langle \alpha', \kappa', N', \sigma_\mu' \rangle
+    }
+    {
+      \mathcal{C}, \mathcal{A}, (H, \lst{\pi_\mu})  \vdash \langle \alpha, \kappa, N, (\sigma, \lst{\Sigma_\mu})\rangle \systemstep \langle \alpha', \kappa', N', (\sigma, \lst{\Sigma_\mu}[i \mapsto \sigma_\mu']) \rangle
+    }
+    \\
+
+    \RULE {AdversaryDerive}
+    {
+      f \in \mathcal{A} \\
+      i \in \lst{i} \implies i \in \domain{\kappa}
+    }
+    {
+      \mathcal{C}, \mathcal{A}, \pi \vdash \langle \alpha, \kappa, N, \Sigma \rangle \systemstep \langle \alpha \lconcat [derive(f, \lst{i})],~ \kappa \lconcat [f (\kappa\left[~\lst{i}~\right])], N, \Sigma \rangle
+    }
+    \\
+
+    \RULE {AdversarySend}
+    {
+      c \in \mathcal{C} \\
+      i \in \domain{\kappa}
+    }
+    {
+      \mathcal{C}, \mathcal{A}, \pi \vdash \langle \alpha, \kappa, N, \Sigma \rangle \systemstep \langle \alpha \lconcat [send(c, i)],~ \kappa, N[c \mapsto N[c] + \{\kappa[i]\}], \Sigma \rangle
+    }
+  \end{mathpar}
+  \caption{Adversary-Controlled System Semantics}
+  \label{fig:system-semantics}
+\end{figure}
+
+With a semantics for protocol initialization (Sections~\ref{subsec:definition-semantics} and \ref{subsec:proto-body-semantics}) and protocol statement execution (Section~\ref{subsec:statement-semantics}), we can now define the full system semantics for protocol execution under an external adversary.
+A semantics for the execution of a protocol $\pi$ under an external adversary is given by the judgment $\mathcal{C}, \mathcal{A}, \pi \vdash \langle \alpha, \kappa, N, \Sigma \rangle \systemstep \langle \alpha', \kappa', N', \Sigma' \rangle$.
+Importantly, the system semantics are defined with respect to a protocol value $\pi$, not a protocol definition $d$.
+
+The system semantics only model system execution after initialization.
+The initial system state $\langle \alpha_0, \kappa_0, N_0, \Sigma_0 \rangle$ can be constructed from the definition and body semantics, given a main protocol name $x_0$, arguments $\lst{v_0}$, and external channels $\mathcal{C}$.
+Specifically, the definition environment $\Gamma$ is first constructed from the protocol definitions $d$ using the protocol definition semantics (Section~\ref{subsec:definition-semantics}).
+Then, the main protocol body $p$ (where $\Gamma[x_0] = (\lst{x}, p)$) is executed with the initial environment $[\lst{x} \mapsto \lst{v_0}]$ using the protocol body semantics (Section~\ref{subsec:proto-body-semantics}) to get the initial observed effects $\alpha_0$, initial knowledge $\kappa_0$, and initial protocol state $\Sigma_0$.
+For simplicity, we assume the initial network $N_0$ is empty.
+
+The actions an adversary can take are captured by the \rulelabel{AdversarySend} and \rulelabel{AdversaryDerive} rules.
+Given current knowledge $\kappa$, the adversary can add values it knows to the network $N$ (rule \rulelabel{AdversarySend}).
+It can derive new values by applying one of its derivation functions, represented by the set $\mathcal{A}$, to values it already knows (rule \rulelabel{AdversaryDerive}).
+The specific interaction the adversary made with the protocol ($send$ or $derive$) is recorded in the trace of interactions and observed effects $\alpha$.
+$\alpha$ is not used for execution, but is rather later used to define adversarial equivalence between two protocols under interaction with the same adversary.
+Note that adversary interactions that reference terms in the attacker's knowledge $\kappa$ only reference terms by their index.
+This restriction is important in defining adversarial equivalence, since the adversary's specific knowledge may differ between two protocol executions while still remaining statically indistinguishable to the adversary.
+
+Separately, the protocol $\pi$, represented as a tuple of the local handlers $H$ and sub-protocols $\lst{\pi_\mu}$, may execute one of its handlers (rule \rulelabel{ExecHandler}) or one of its sub-protocols' handlers (rule \rulelabel{ExecSubprocess}).
+\rulelabel{ExecSubprocess} is defined recursively, so that any protocol transition must include exactly one invocation of \rulelabel{ExecHandler}.
+A protocol step updates the current protocol state $\Sigma$, along with adversary's knowledge $\kappa$, observed effects $\alpha$, and network $N$.
+The adversary does not directly control handler execution, but can influence it by choosing to add messages to the network $N$.
+Handler execution is modeled as atomic, so the effects from executing the statements in a handler are either all applied (if the handler is enabled and can succesfully execute) or not applied.
+The semantics for the system is given in a small-step style since the system evolution is not expected to terminate and may infinitely take steps.
+The system semantics are non-deterministic, so many different transitions may occur from a given state.

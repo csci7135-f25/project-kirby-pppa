@@ -1,0 +1,54 @@
+\section{Introduction}
+\label{sec:introduction}
+
+% 1) Problem statement
+This paper focuses on the problem of formally defining cryptographic protocol equivalence under interaction by an active, Dolev-Yao~\cite{dolev-yao} style, adversary.
+The formal definition, along with concrete and collecting semantics for these protocols, is a step towards developing sound abstractions and automated techniques to verify this equivalence.
+
+% 2) Why the problem is important and interesting
+Cryptographic protocols, protocols that aim to provide security properties using cryptographic primitives such as encryption and digital signatures, are notoriously difficult to design.
+For example, the classic Needham-Schroeder public-key protocol~\cite{ns} aims to establish a mutually authenticated connection between two parties over a network using asymmetric encryption and digital signatures.
+Unfortunately, the protocol fails to provide mutual authentication when an adversary can interact with the protocol~\cite{nsl}; a fact that was only discovered 17 years later.
+It is therefore critical that cryptographic protocols be \emph{formally specified} and \emph{verified} to ensure they meet both their correctness and security requirements \emph{before} the protocols are widely used.
+
+Cryptographic protocol specifications are often given as equivalence with another protocol or arguments.
+For example, an encryption scheme is semantically secure if, given a ciphertexts and two plaintexts of the same length, an attacker is equally likely to believe each plaintext was encrypted to create the ciphertext.
+Likewise, a cryptographic protocol may be proven secure by showing it behaves equivalently, from the perspective of an adversary, to an ideal specification in which security is assumed and a simulator~\cite{how-to-simulate-it}.
+Proving a cryptographic protocol secure then reduces to proving equivalence between two protocols from the perspective of an adversary that interacts with the protocols.
+
+To ensure cryptographic protocols are secure against realistic attacks, it is important to model the strongest realistic adversary when reasoning about protocol equivalence.
+The strongest such adversary for protocols that communicate over a network is a man-in-the-middle adversary that can observe, intercept, and modify all network traffic.
+An adversary also has computational capabilities that allow it to derive new information from the information it observes.
+In other words, the strongest realistic adversary is an active computational network adversary.
+
+% 3) Why the problem is challenging
+However, verifying a cryptographic protocol in the presence of such an adversary is a challenging task as it involves reasoning about probabilities, feasible information an attacker could derive from interacting with the protocol, and the arithmetic used to implement cryptographic primitives.
+To simplify verification, cryptographic primitives can be modeled algebraically using an equational theory.
+For example, the encryption of a message $m$ using key $k$ can be modeled algebraically using the term $enc(m,k)$, while the (symmetric) decryption of such a term using the same key can be captured by the equation $dec(enc(m, k), k) = m$.
+An adversary is then modeled with an explicit knowledge containing the set of terms it knows, the ability to observe and control network communication, and the ability to derive new terms from its knowledge using the equational theory.
+This approach is known as a Dolev-Yao~\cite{dolev-yao}, or Symbolic, model of cryptography.
+
+Unfortunately, existing symbolic proof approaches are either insufficient for proving the equivalence properties needed for simulation-style proofs, or require significant manual proof efforts.
+Specifically, current approaches to proving symbolic equivalence of two protocols require the protocols to be identical modulo the values they send~\cite{proverif-diff-equivalence, tamarin-equivalence, maude-npa-diff-equivalence, squirrel-prover}.
+This approach is typically only used to show two processes are equivalent modulo different inputs, hence the name \emph{diff-equivalence}.
+Unfortunately, diff-equivalence's requirements are too strong to prove equivalence in simulation style specifications, which necessarily include extra transitions related to private communication between the ideal specification and simulator.
+Proving a more general equivalence between two protocols currently relies on explicitly proving bisimilarity, which involves a significant proof effort.
+
+% 4) My expected technical contributions
+An automated yet general approach to verifying protocol equivalence with respect to an active symbolic adversary is needed.
+In this paper, I take the first step towards such an approach by defining adversarial equivalence, a general definition of equivalence for protocols from the perspective of an active symbolic adversary.
+The definition is given with respect to a collecting semantics that captures the information an adversary can learn from interacting with a protocol.
+These definitions serve as a foundation upon which sound, over-approximate abstractions can be defined.
+Such abstractions may then be used to simplify and automate the verification of adversarial equivalence.
+
+\paragraph*{Contributions}
+Specifically, this paper makes the following contributions:
+\begin{itemize}
+  \item An actor-style syntax (Section~\ref{sec:syntax}) and concrete semantics (Section~\ref{sec:concrete-semantics}) for protocols interacting with an active symbolic adversary.
+  \item A collecting semantics for protocols (Section~\ref{subsec:collecting-semantics}) that captures adversarial interaction properties. These properties describe how the adversary interacted with the protocol, the observed effects, and the attacker's knowledge.
+  \item A definition of adversarial equivalence (Section~\ref{subsec:adversarial-equivalence}) based on the collecting semantics.
+    % I don't have enough time to do justice to thoughts about possible abstractions.
+    \todo{
+    \item A discussion of possible abstractions and abstract semantics that could over-approximate the collecting semantics while remaining computable.
+    }
+\end{itemize}

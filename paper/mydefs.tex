@@ -1,0 +1,108 @@
+% Comment commands used by Evan. Contain boolean flags to either enable/disable all coments, or enable/disable TODOs and jedi statements.
+\newboolean{showcomments}
+\setboolean{showcomments}{true}
+\newboolean{showjedi}
+\setboolean{showjedi}{false}
+\newboolean{showtodos}
+\setboolean{showtodos}{false}
+\newcommand{\editcomment}[2][red]{\ifthenelse{\boolean{showcomments}}{{\color{#1}$\bigl[$\bgroup\em #2\egroup$\bigr]$}}{}}
+\newcommand{\note}[1]{\editcomment[blue]{#1}}
+\newcommand{\todo}[1]{\ifthenelse{\boolean{showtodos}}{\editcomment{{\bf TODO:} #1}}}
+% Evan likes to review "jedi" statements, that should capture the essence of a paragraph (i.e. how would Yoda convey the point of a paragraph?). Should be able to just read the jedi statements to get all the important points of a paper.
+\newcommand{\jedi}[1]{\ifthenelse{\boolean{showjedi}}{\editcomment[cyan]{#1}}{}}
+
+% Denotes that the work for this text is still in progress
+\newcommand{\wip}[1]{{\color{red} \textbf{#1}}}
+
+% Protocol notation commands
+\newcommand{\protocol}{\pi}
+\newcommand{\protocolSet}{\Pi}
+\newcommand{\trace}{\tau}
+\newcommand{\traceSet}{\mathcal{T}}
+\newcommand{\attacker}{\mathcal{A}}
+\newcommand{\step}[4]{\langle #1 \rangle \xrightarrow[#2]{#3} \langle #4 \rangle}
+\newcommand{\stepMulti}[3]{\langle #1 \rangle \xrightarrow[#2]{}^* \langle #3 \rangle}
+% Non-deterministic versions of the step relations
+\newcommand{\stepND}[4]{#1 \xrightarrow[#2]{#3} #4}
+\newcommand{\stepMultiND}[3]{#1 \xrightarrow[#2]{}^* #3}
+\newcommand{\tape}{\gamma}
+\newcommand{\tapeSet}{\Gamma}
+
+% Notation used in language semantics
+\newcommand{\protodefeval}{\Downarrow}
+\newcommand{\protoeval}{\Downarrow}
+\newcommand{\stmteval}{\Downarrow}
+\newcommand{\expreval}{\Downarrow}
+\newcommand{\systemstep}{\rightarrow}
+
+% Represents internal transitions or state
+\newcommand{\internal}{\tau}
+% Represents sub-protocol transitions or state
+\newcommand{\subproto}{\mu}
+
+% Common notation
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\quoted}[1]{``#1''}
+\newcommand{\defeq}{\stackrel{\text{def}}{=}}
+\newcommand{\powerset}{\mathcal{P}}
+\newcommand{\compose}[2]{#1 \circ #2}
+\newcommand{\domain}[1]{\mathrm{dom}(#1)}
+% Equivalent of powerset for bags. In longer form `\Bag(X)` would instead be represented as something like `X \rightarrow \nat`.
+\newcommand{\Bag}{\mathcal{B}}
+% Record restriction. Keep only the given fields of a record
+\newcommand{\restrict}[2]{#1 |_{\{ #2 \}}}
+% Bag comprehension, analogous to the notation `{x | p(x)}` for sets
+\newcommand{\bagcomp}[2]{ \{\{ #1 ~|~ #2 \}\} }
+% Alternative within a non-terminal syntax definition
+\newcommand{\ALT}{~\mid~}
+
+% Indistinguishability notation
+\newcommand{\ind}{\texttt{ind}}
+% "Leak Equivalence", essentially just indistinguishability on traces
+\newcommand{\LeEq}{\texttt{LeEq}}
+\newcommand{\capabilities}{\mathcal{C}}
+% Equivalence class notation
+\newcommand{\eqclass}[2]{[#1]_{#2}}
+
+% Denotes the set of lists
+\newcommand{\lst}[1]{\overline{#1}}
+% Denotes the set of coinductive streams
+\newcommand{\stream}[1]{#1^\omega}
+
+% Notation for protocol test relations such test simulation, static equivalence, and test equivalence.
+\newcommand{\staticequiv}{\approx}
+\newcommand{\testsim}[1][T]{\stackrel{\subset}{\sim}_{#1}}
+\newcommand{\testpreorder}[1][T]{\stackrel{<}{\sim}_{#1}}
+\newcommand{\testequiv}[1][T]{\approx_{#1}}
+
+% Shortcut to represent a protocol composed with a tester (T by default)
+\newcommand{\tested}[2][T]{#1 \parallel #2}
+
+% Name of the framework introduced in this paper
+\newcommand{\framework}{\texttt{Placeholder}\xspace}
+
+% Applied pi calculus notation
+\newcommand{\apisend}[2]{\overline{#1}\langle #2 \rangle}
+\newcommand{\apirecv}[2]{#1 (#2)}
+
+% Inference rule notation
+\newcommand{\RULE}[3]{\inferrule*[Right=#1]{#2}{#3}}
+\newcommand{\rulelabel}[1]{\textrm{\sc{#1}}}
+% Denotation of notation
+\newcommand{\denote}[1]{\llbracket #1 \rrbracket}
+% Collecting semantics notation
+\newcommand{\collect}[1]{\{\!\llbracket #1 \rrbracket\!\}}
+
+% List concatenation operator
+\newcommand{\lconcat}{\mathbin{++}}
+
+% Renders the same way as in lstlisting
+% \newcommand{\lstkw}[1]{{\lstinline[columns=fixed]{#1}}}
+\newcommand{\lstkw}[1]{\texttt{#1}}
+
+% Name of the language introduced in this paper
+\newcommand{\lang}{\texttt{DYAct}\xspace}
+
+% Symmetric transitions
+\newcommand{\symmetric}[1]{\equiv_{#1}}

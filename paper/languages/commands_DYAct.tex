@@ -1,0 +1,35 @@
+% Custom inline code listing command
+% Use xparse to support a starred variant that enables mathescape
+\NewDocumentCommand{\DYAct}{s m}{%
+  \IfBooleanTF{#1}
+    {\lstinline[language=DYAct,mathescape=true]|#2|}%
+    {\lstinline[language=DYAct]|#2|}%
+}
+
+% Helper command for formatting keywords (blue + monospace)
+\newcommand{\DYActMathKeyword}[1]{\textcolor{blue}{\texttt{#1}}}
+
+\ExplSyntaxOn
+% Define the list of DYAct keywords (should match listings_DYAct.tex)
+\clist_const:Nn \c_dyact_keywords_clist {
+  protocol, fun, handler, on, when, do, run, receive, send,
+  if, then, else, fresh, fst, snd, unwrap, some, none
+}
+
+% Check if a string is in the keyword list
+\prg_new_conditional:Npnn \dyact_is_keyword:n #1 { T, F, TF } {
+  \clist_if_in:NnTF \c_dyact_keywords_clist {#1}
+    { \prg_return_true: }
+    { \prg_return_false: }
+}
+
+% `\DYActMath` mimics the listing style (blue keywords, monospace font) without
+% using `\lstinline` to avoid alignment issues in `\inferrule` environments.
+% Also allows for the use of `\DYAct`-like formatting in math mode. Only colors
+% DYAct keywords blue; other text remains black.
+\NewDocumentCommand{\DYActMath}{m}{
+  \dyact_is_keyword:nTF {#1}
+    {\DYActMathKeyword{#1}}  % Keyword: blue + monospace
+    {\texttt{#1}}             % Not a keyword: just monospace
+}
+\ExplSyntaxOff

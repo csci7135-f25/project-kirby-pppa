@@ -1,0 +1,20 @@
+\section{Related Work}
+
+\subsection{Comparison with Other Equivalences}
+In this paper we introduce the novel property adversarial equivalence for protocols interacting with an active symbolic adversary.
+Other notions of protocol equivalence have been introduced in prior work.
+The Calculus of Communicating Systems (CCS) defined observational equivalence without a notion of an adversary~\cite{ccs}.
+The applied pi calculi added the notion of observational equivalence with respect to an active adversary, where the adversary is represented using the context~\cite{applied-pi-calculus}.
+The applied pi calculus also defined labeled bisimilarity~\cite{applied-pi-calculus} and showed that labeled bisimilarity and observational equivalence coincide.
+The notions of trace equivalence introduced in \cite{trace-equivalence-decision} and multiset rewrite observational equivalence in \cite{tamarin-equivalence} are very similar to the definition we give of adversarial equivalence.
+Trace equivalence is defined based on traces, which is analogous to our definition based on collected adversarial interaction properties.
+However, both trace equivalence and multiset rewrite observational equivalence treat receiving a message over a channel as an observational effect.
+We note that in practice a man-in-the-middle adversary is only able to intercept and send messages over a network, they are not able to determine when a message is read.
+Additionally, while we treat derivation steps as separate transitions, both trace equivalence and multiset rewrite observational equivalence are defined with respect to labels that include the recipes used to derive terms, effectively rolling many derivations into a single transition.
+
+\subsection{Comparison with Other Protocol Models}
+The models used in CCS~\cite{ccs}, variants of the applied pi calculus~\cite{applied-pi-calculus,trace-equivalence-decision}, and tamarin~\cite{tamarin,tamarin-equivalence} all model protocols algebraically as we do here.
+CCS and applied pi calculus variants further model communication between protocol participants as synchronous communication, whereas our model of communication is asynchronous, a more realistic choice.
+Tamarin's model of communication with an adversary is asynchronous, but other forms of communication between protocol participants need to be manually modeled with custom rewrite rules.
+The applied pi calculus variants typically model adversaries as contexts and include derivable terms as part of the definition of static equivalence, while we explicitly model adversaries and adversary derivations using explicit transitions in our semantics.
+Tamarin likewise models adversaries explicitly, but derivations are rolled into single rewrites using recipes rather than using several single-step derivations as we do.
