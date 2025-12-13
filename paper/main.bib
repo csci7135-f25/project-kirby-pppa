@@ -1,0 +1,476 @@
+@article{test-equivalence,
+  title    = {Testing equivalences for processes},
+  journal  = {Theoretical Computer Science},
+  volume   = {34},
+  number   = {1},
+  pages    = {83-133},
+  year     = {1984},
+  issn     = {0304-3975},
+  doi      = {https://doi.org/10.1016/0304-3975(84)90113-0},
+  url      = {https://www.sciencedirect.com/science/article/pii/0304397584901130},
+  author   = {R. {De Nicola} and M.C.B. Hennessy},
+  abstract = {Given a set of processes and a set of tests on these processes we show how to define in a natural way three different equivalences on processes. These equivalences are applied to a particular language CCS. We give associated complete proof systems and fully abstract models. These models have a simple representation in terms of trees.}
+}
+
+@inproceedings{beyond-diff-equivalence,
+  author    = {Cheval, Vincent and Rakotonirina, Itsaka},
+  booktitle = {2023 IEEE 36th Computer Security Foundations Symposium (CSF)},
+  title     = {Indistinguishability Beyond Diff-Equivalence in ProVerif},
+  year      = {2023},
+  volume    = {},
+  number    = {},
+  pages     = {184-199},
+  keywords  = {Sufficient conditions;Prototypes;Computer security;Cryptographic protocols;automatic-verification;symbolic-model;ProVerif;Equivalence;Privacy;cryptographic-protocol},
+  doi       = {10.1109/CSF57540.2023.00036}
+}
+
+@inproceedings{deepsec,
+  author    = {Cheval, Vincent and Kremer, Steve and Rakotonirina, Itsaka},
+  booktitle = {2018 IEEE Symposium on Security and Privacy (SP)},
+  title     = {DEEPSEC: Deciding Equivalence Properties in Security Protocols Theory and Practice},
+  year      = {2018},
+  volume    = {},
+  number    = {},
+  pages     = {529-546},
+  keywords  = {Tools;Protocols;Complexity theory;Calculus;Encryption;Security protocols;Automated verification;Equivalence properties},
+  doi       = {10.1109/SP.2018.00033}
+}
+
+@inproceedings{spi-calculus,
+  author    = {Abadi, Mart\'{\i}n and Gordon, Andrew D.},
+  title     = {A calculus for cryptographic protocols: the spi calculus},
+  year      = {1997},
+  isbn      = {0897919122},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/266420.266432},
+  doi       = {10.1145/266420.266432},
+  booktitle = {Proceedings of the 4th ACM Conference on Computer and Communications Security},
+  pages     = {36–47},
+  numpages  = {12},
+  location  = {Zurich, Switzerland},
+  series    = {CCS '97}
+}
+
+@article{applied-pi-calculus,
+  author     = {Abadi, Mart\'{\i}n and Blanchet, Bruno and Fournet, C\'{e}dric},
+  title      = {The Applied Pi Calculus: Mobile Values, New Names, and Secure Communication},
+  year       = {2017},
+  issue_date = {February 2018},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {65},
+  number     = {1},
+  issn       = {0004-5411},
+  url        = {https://doi.org/10.1145/3127586},
+  doi        = {10.1145/3127586},
+  abstract   = {We study the interaction of the programming construct “new,” which generates statically scoped names, with communication via messages on channels. This interaction is crucial in security protocols, which are the main motivating examples for our work; it also appears in other programming-language contexts.We define the applied pi calculus, a simple, general extension of the pi calculus in which values can be formed from names via the application of built-in functions, subject to equations, and be sent as messages. (In contrast, the pure pi calculus lacks built-in functions; its only messages are atomic names.) We develop semantics and proof techniques for this extended language and apply them in reasoning about security protocols.This article essentially subsumes the conference paper that introduced the applied pi calculus in 2001. It fills gaps, incorporates improvements, and further explains and studies the applied pi calculus. Since 2001, the applied pi calculus has been the basis for much further work, described in many research publications and sometimes embodied in useful software, such as the tool ProVerif, which relies on the applied pi calculus to support the specification and automatic analysis of security protocols. Although this article does not aim to be a complete review of the subject, it benefits from that further work and provides better foundations for some of it. In particular, the applied pi calculus has evolved through its implementation in ProVerif, and the present definition reflects that evolution.},
+  journal    = {J. ACM},
+  month      = oct,
+  articleno  = {1},
+  numpages   = {41},
+  keywords   = {Security protocols}
+}
+
+@article{semantics-of-communication-for-equivalence,
+  author   = {Kushal Babel and Vincent Cheval and Steve Kremer},
+  title    = {On the semantics of communications when verifying equivalence properties},
+  journal  = {Journal of Computer Security},
+  volume   = {28},
+  number   = {1},
+  pages    = {71-127},
+  year     = {2020},
+  doi      = {10.3233/JCS-191366},
+  url      = {https://doi.org/10.3233/JCS-191366},
+  eprint   = {https://doi.org/10.3233/JCS-191366},
+  abstract = { Symbolic models for security protocol verification were pioneered by Dolev and Yao in their seminal work. Since then, although inspired by the same ideas, many variants of the original model were developed. In particular, a common assumption is that the attacker has complete control over the network and can therefore intercept any message. This assumption has been interpreted in slightly different ways depending on the particular models: either any protocol output is directly routed to the adversary, or communications may be among any two participants, including the attacker – the scheduling between which exact parties the communication happens is left to the attacker. This difference may seem unimportant at first glance and, depending on the verification tools, either one or the other semantics is implemented. We show that, unsurprisingly, they indeed coincide for reachability properties. However, for indistinguishability properties, we prove that these two interpretations lead to incomparable semantics. We also introduce and study a new semantics, where internal communications are allowed but messages are always eavesdropped by the attacker. This new semantics yields strictly stronger equivalence relations. Moreover, we identify two subclasses of protocols for which the three semantics coincide. Finally, we implemented verification of trace equivalence for each of the three semantics in the DeepSec tool and compare their performances on several classical examples. }
+}
+
+@inproceedings{squirrel-prover,
+  author    = {Baelde, David and Delaune, Stéphanie and Jacomme, Charlie and Koutsos, Adrien and Moreau, Solène},
+  booktitle = {2021 IEEE Symposium on Security and Privacy (SP)},
+  title     = {An Interactive Prover for Protocol Verification in the Computational Model},
+  year      = {2021},
+  volume    = {},
+  number    = {},
+  pages     = {537-554},
+  keywords  = {Privacy;Protocols;Computational modeling;Semantics;Tools;Solids;Cognition;Security Protocols;Formal Methods;Observational Equivalence;Computational Security;Interactive Prover},
+  doi       = {10.1109/SP40001.2021.00078}
+}
+
+@article{unbounded-privacy-verification,
+  author   = {Lucca Hirschi and David Baelde and Stéphanie Delaune},
+  title    = {A method for unbounded verification of privacy-type properties},
+  journal  = {Journal of Computer Security},
+  volume   = {27},
+  number   = {3},
+  pages    = {277-342},
+  year     = {2019},
+  doi      = {10.3233/JCS-171070},
+  url      = {https://doi.org/10.3233/JCS-171070},
+  eprint   = {https://doi.org/10.3233/JCS-171070},
+  abstract = { In this paper, we consider the problem of verifying anonymity and unlinkability in the symbolic model, where protocols are represented as processes in a variant of the applied pi calculus, notably used in the ProVerif tool. Existing tools and techniques do not allow to verify directly these properties, expressed as behavioral equivalences. We propose a different approach: we design two conditions on protocols which are sufficient to ensure anonymity and unlinkability, and which can then be effectively checked automatically using ProVerif. Our two conditions correspond to two broad classes of attacks on unlinkability, i.e. data and control-flow leaks. This theoretical result is general enough that it applies to a wide class of protocols based on a variety of cryptographic primitives. In particular, using our tool, UKano, we provide the first formal security proofs of protocols such as BAC and PACE (e-passport), Hash-Lock (RFID authentication), etc. Our work has also lead to the discovery of new attacks, including one on the LAK protocol (RFID authentication) which was previously claimed to be unlinkable (in a weak sense). }
+}
+
+@inproceedings{extended-unbounded-privacy-verification,
+  author    = {Baelde, David and Delaune, Stéphanie and Moreau, Solène},
+  booktitle = {2020 IEEE 33rd Computer Security Foundations Symposium (CSF)},
+  title     = {A Method for Proving Unlinkability of Stateful Protocols},
+  year      = {2020},
+  volume    = {},
+  number    = {},
+  pages     = {169-183},
+  keywords  = {Protocols;Databases;Privacy;Radiofrequency identification;Authentication;Tools},
+  doi       = {10.1109/CSF49147.2020.00020}
+}
+
+@article{symbolic-uc,
+  author   = {Florian Böhl and Dominique Unruh},
+  title    = {Symbolic universal composability},
+  journal  = {Journal of Computer Security},
+  volume   = {24},
+  number   = {1},
+  pages    = {1-38},
+  year     = {2016},
+  doi      = {10.3233/JCS-140523},
+  url      = {https://doi.org/10.3233/JCS-140523},
+  eprint   = {https://doi.org/10.3233/JCS-140523},
+  abstract = { We introduce a variant of the Universal Composability framework (UC; Canetti, FOCS 2001) that uses symbolic cryptography. Two salient properties of the UC framework are secure composition and the possibility of easily defining security by giving an ideal functionality as specification. These advantages are now also available in a symbolic modeling of cryptography, allowing for a modular analysis of complex protocols.We furthermore introduce a new technique for modular design of protocols that uses UC but avoids the need for powerful cryptographic primitives that often comes with UC protocols; this “virtual primitives” approach is unique to the symbolic setting and has no counterpart in the original computational UC framework. }
+}
+
+
+@article{canetti-symbolic-uc,
+  title    = {Universally {Composable} {Symbolic} {Security} {Analysis}},
+  volume   = {24},
+  issn     = {1432-1378},
+  url      = {https://doi.org/10.1007/s00145-009-9055-0},
+  doi      = {10.1007/s00145-009-9055-0},
+  abstract = {In light of the growing complexity of cryptographic protocols and applications, it becomes highly desirable to mechanize—and eventually automate—the security analysis of protocols. A natural step towards automation is to allow for symbolic security analysis. However, the complexity of mechanized symbolic analysis is typically exponential in the space and time complexities of the analyzed system. Thus, full automation via direct analysis of the entire given system has so far been impractical even for systems of modest complexity.},
+  number   = {1},
+  journal  = {Journal of Cryptology},
+  author   = {Canetti, Ran and Herzog, Jonathan},
+  month    = jan,
+  year     = {2011},
+  pages    = {83--147}
+}
+
+@article{verifying-indistinguishability,
+  author     = {Linvill, Kirby and Kaki, Gowtham and Wustrow, Eric},
+  title      = {Verifying Indistinguishability of Privacy-Preserving Protocols},
+  year       = {2023},
+  issue_date = {October 2023},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {7},
+  number     = {OOPSLA2},
+  url        = {https://doi.org/10.1145/3622849},
+  doi        = {10.1145/3622849},
+  abstract   = {Internet users rely on the protocols they use to protect their private
+                information including their identity and the websites they visit. Formal
+                verification of these protocols can detect subtle bugs that compromise these
+                protections at design time, but is a challenging task as it involves
+                probabilistic reasoning about random sampling, cryptographic primitives, and
+                concurrent execution. Existing approaches either reason about symbolic
+                models of the protocols that sacrifice precision for automation, or reason
+                about more precise computational models that are harder to automate and
+                require cryptographic expertise. In this paper we propose a novel approach
+                to verifying privacy-preserving protocols that is more precise than symbolic
+                models yet more accessible than computational models. Our approach permits
+                direct-style proofs of privacy, as opposed to indirect game-based
+                proofs in computational models, by formalizing privacy as
+                indistinguishability of possible network traces induced by a
+                protocol. We ease automation by leveraging insights from the distributed
+                systems verification community to create sound synchronous models of
+                concurrent protocols. Our verification framework is implemented in F* as a
+                library we call Waldo. We describe two large case studies of using Waldo
+                to verify indistinguishability; one on the Encrypted Client Hello
+                (ECH) extension of the TLS protocol and another on a Private
+                Information Retrieval (PIR) protocol. We uncover subtle flaws in the TLS
+                ECH specification that were missed by other models.},
+  journal    = {Proc. ACM Program. Lang.},
+  month      = oct,
+  articleno  = {273},
+  numpages   = {28},
+  keywords   = {Synchronization, Protocol Verification, Privacy, Indistinguishability, Concurrency}
+}
+
+@inproceedings{tamarin-equivalence,
+  author    = {Basin, David and Dreier, Jannik and Sasse, Ralf},
+  title     = {Automated Symbolic Proofs of Observational Equivalence},
+  year      = {2015},
+  isbn      = {9781450338325},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/2810103.2813662},
+  doi       = {10.1145/2810103.2813662},
+  abstract  = {Many cryptographic security definitions can be naturally formulated as observational equivalence properties. However, existing automated tools for verifying the observational equivalence of cryptographic protocols are limited: they do not handle protocols with mutable state and an unbounded number of sessions. We propose a novel definition of observational equivalence for multiset rewriting systems. We then extend the Tamarin prover, based on multiset rewriting, to prove the observational equivalence of protocols with mutable state, an unbounded number of sessions, and equational theories such as Diffie-Hellman exponentiation. We demonstrate its effectiveness on case studies, including a stateful TPM protocol.},
+  booktitle = {Proceedings of the 22nd ACM SIGSAC Conference on Computer and Communications Security},
+  pages     = {1144–1155},
+  numpages  = {12},
+  keywords  = {symbolic model, protocol verification, observational equivalence},
+  location  = {Denver, Colorado, USA},
+  series    = {CCS '15}
+}
+
+@inproceedings{maude-npa-diff-equivalence,
+  author    = {Santiago, Sonia
+               and Escobar, Santiago
+               and Meadows, Catherine
+               and Meseguer, Jos{\'e}},
+  editor    = {Mauw, Sjouke
+               and Jensen, Christian Damsgaard},
+  title     = {A Formal Definition of Protocol Indistinguishability and Its Verification Using Maude-NPA},
+  booktitle = {Security and Trust Management},
+  year      = {2014},
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {162--177},
+  abstract  = {Intuitively, two protocols {\$}{\{}{\backslash}mathcal P{\}}{\_}1{\$}and {\$}{\{}{\backslash}mathcal P{\}}{\_}2{\$}are indistinguishable if an attacker cannot tell the difference between interactions with {\$}{\{}{\backslash}mathcal P{\}}{\_}1{\$}and with {\$}{\{}{\backslash}mathcal P{\}}{\_}2{\$}. In this paper we: (i) propose an intuitive notion of indistinguishability in Maude-NPA; (ii) formalize such a notion in terms of state unreachability conditions on their synchronous product; (iii) prove theorems showing how ---assuming the protocol's algebraic theory has a finite variant (FV) decomposition-- these conditions can be checked by the Maude-NPA tool; and (iv) illustrate our approach with concrete examples. This provides for the first time a framework for automatic analysis of indistinguishability modulo as wide a class of algebraic properties as FV, which includes many associative-commutative theories of interest to cryptographic protocol analysis.},
+  isbn      = {978-3-319-11851-2}
+}
+
+@article{proverif-diff-equivalence,
+  title    = {Automated verification of selected equivalences for security protocols},
+  journal  = {The Journal of Logic and Algebraic Programming},
+  volume   = {75},
+  number   = {1},
+  pages    = {3-51},
+  year     = {2008},
+  note     = {Algebraic Process Calculi. The First Twenty Five Years and Beyond. III},
+  issn     = {1567-8326},
+  doi      = {https://doi.org/10.1016/j.jlap.2007.06.002},
+  url      = {https://www.sciencedirect.com/science/article/pii/S1567832607000549},
+  author   = {Bruno Blanchet and Martín Abadi and Cédric Fournet},
+  abstract = {In the analysis of security protocols, methods and tools for reasoning about protocol behaviors have been quite effective. We aim to expand the scope of those methods and tools. We focus on proving equivalences P≈Q in which P and Q are two processes that differ only in the choice of some terms. These equivalences arise often in applications. We show how to treat them as predicates on the behaviors of a process that represents P and Q at the same time. We develop our techniques in the context of the applied pi calculus and implement them in the tool ProVerif.}
+}
+
+@article{synchronized-observational-equivalence,
+  author   = {Bruno Blanchet and Ben Smyth},
+  title    = {Automated reasoning for equivalences in the applied pi calculus with barriers},
+  journal  = {Journal of Computer Security},
+  volume   = {26},
+  number   = {3},
+  pages    = {367-422},
+  year     = {2018},
+  doi      = {10.3233/JCS-171013},
+  url      = {https://doi.org/10.3233/JCS-171013},
+  eprint   = {https://doi.org/10.3233/JCS-171013},
+  abstract = { Observational equivalence allows us to study important security properties such as anonymity. Unfortunately, the difficulty of proving observational equivalence hinders analysis. Blanchet, Abadi \& Fournet simplify its proof by introducing a sufficient condition for observational equivalence, called diff-equivalence, which is a reachability condition that can be proved automatically by ProVerif. However, diff-equivalence is a very strong condition, which often does not hold even if observational equivalence does. In particular, when proving equivalence between processes that contain several parallel components, e.g., P∣Q and P′∣Q′, diff-equivalence requires that P is equivalent to P′ and Q is equivalent to Q′. To relax this constraint, Delaune, Ryan \& Smyth introduced the idea of swapping data between parallel processes P′ and Q′ at synchronisation points, without proving its soundness. We extend their work by formalising the semantics of synchronisation, formalising the definition of swapping, and proving its soundness. We also relax some restrictions they had on the processes to which swapping can be applied. Moreover, we have implemented our results in ProVerif. Hence, we extend the class of equivalences that can be proved automatically. We showcase our results by analysing privacy in election schemes by Fujioka, Okamoto \& Ohta, Lee et al., and Juels, Catalano \& Jakobsson, and in the vehicular ad-hoc network by Freudiger et al. }
+}
+
+@inproceedings{equivalence-exploiting-symmetries,
+  author    = {Cheval, Vincent and Kremer, Steve and Rakotonirina, Itsaka},
+  title     = {Exploiting Symmetries When Proving Equivalence Properties for Security Protocols},
+  year      = {2019},
+  isbn      = {9781450367479},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/3319535.3354260},
+  doi       = {10.1145/3319535.3354260},
+  abstract  = {Verification of privacy-type properties for cryptographic protocols in an active adversarial environment, modelled as a behavioural equivalence in concurrent-process calculi, exhibits a high computational complexity. While undecidable in general, for some classes of common cryptographic primitives the problem is coNEXP-complete when the number of honest participants is bounded.In this paper we develop optimisation techniques for verifying equivalences, exploiting symmetries between the two processes under study. We demonstrate that they provide a significant (several orders of magnitude) speed-up in practice, thus increasing the size of the protocols that can be analysed fully automatically.},
+  booktitle = {Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security},
+  pages     = {905–922},
+  numpages  = {18},
+  keywords  = {symmetry, security protocols, partial-order reductions},
+  location  = {London, United Kingdom},
+  series    = {CCS '19}
+}
+
+@article{dolev-yao,
+  author   = {Dolev, D. and Yao, A.},
+  journal  = {IEEE Transactions on Information Theory},
+  title    = {On the security of public key protocols},
+  year     = {1983},
+  volume   = {29},
+  number   = {2},
+  pages    = {198-208},
+  keywords = {},
+  doi      = {10.1109/TIT.1983.1056650}
+}
+
+@inproceedings{universal-composability,
+  author    = {Canetti, R.},
+  booktitle = {Proceedings 42nd IEEE Symposium on Foundations of Computer Science},
+  title     = {Universally composable security: a new paradigm for cryptographic protocols},
+  year      = {2001},
+  volume    = {},
+  number    = {},
+  pages     = {136-145},
+  keywords  = {Cryptographic protocols;Cryptography;Mathematical model;Computer security;Application software;Radio access networks;Reactive power;Job design;Computer science},
+  doi       = {10.1109/SFCS.2001.959888}
+}
+
+@article{proverif,
+  title     = {Modeling and verifying security protocols with the applied pi calculus and ProVerif},
+  author    = {Blanchet, Bruno and others},
+  journal   = {Foundations and Trends{\textregistered} in Privacy and Security},
+  volume    = {1},
+  number    = {1-2},
+  pages     = {1--135},
+  year      = {2016},
+  publisher = {Now Publishers, Inc.}
+}
+
+@inproceedings{tamarin,
+  title        = {The TAMARIN prover for the symbolic analysis of security protocols},
+  author       = {Meier, Simon and Schmidt, Benedikt and Cremers, Cas and Basin, David},
+  booktitle    = {International conference on computer aided verification},
+  pages        = {696--701},
+  year         = {2013},
+  organization = {Springer}
+}
+
+@article{nsl,
+  title     = {An attack on the Needham- Schroeder public- key authentication protocol},
+  author    = {Lowe, Gavin},
+  journal   = {Information processing letters},
+  volume    = {56},
+  number    = {3},
+  year      = {1995},
+  publisher = {Information Processing Letters}
+}
+
+@article{ns,
+  author     = {Needham, Roger M. and Schroeder, Michael D.},
+  title      = {Using encryption for authentication in large networks of computers},
+  year       = {1978},
+  issue_date = {Dec. 1978},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {21},
+  number     = {12},
+  issn       = {0001-0782},
+  url        = {https://doi.org/10.1145/359657.359659},
+  doi        = {10.1145/359657.359659},
+  abstract   = {Use of encryption to achieve authenticated communication in computer networks is discussed. Example protocols are presented for the establishment of authenticated connections, for the management of authenticated mail, and for signature verification and document integrity guarantee. Both conventional and public-key encryption algorithms are considered as the basis for protocols.},
+  journal    = {Commun. ACM},
+  month      = dec,
+  pages      = {993–999},
+  numpages   = {7},
+  keywords   = {security, public-key cryptosystems, protocols, networks, encryption, data encryption standard, authentication}
+}
+
+@inbook{how-to-simulate-it,
+  author    = {Lindell, Yehuda},
+  title     = {How to Simulate It -- A Tutorial on the Simulation Proof Technique},
+  booktitle = {Tutorials on the Foundations of Cryptography: Dedicated to Oded Goldreich},
+  year      = {2017},
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {277--346},
+  abstract  = {One of the most fundamental notions of cryptography is that of simulation. It stands behind the concepts of semantic security, zero knowledge, and security for multiparty computation. However, writing a simulator and proving security via the use of simulation is a nontrivial task, and one that many newcomers to the field often find difficult. In this tutorial, we provide a guide to how to write simulators and prove security via the simulation paradigm. Although we have tried to make this tutorial as stand-alone as possible, we assume some familiarity with the notions of secure encryption, zero-knowledge, and secure computation.},
+  isbn      = {978-3-319-57048-8},
+  doi       = {10.1007/978-3-319-57048-8\_6},
+  url       = {https://doi.org/10.1007/978-3-319-57048-8\_6}
+}
+
+@article{game-sequences,
+  title   = {Sequences of games: a tool for taming complexity in security proofs},
+  author  = {Shoup, Victor},
+  journal = {cryptology eprint archive},
+  year    = {2004}
+}
+
+@misc{tls-attacks,
+  series       = {Request for Comments},
+  number       = 7457,
+  howpublished = {RFC 7457},
+  publisher    = {RFC Editor},
+  doi          = {10.17487/RFC7457},
+  url          = {https://www.rfc-editor.org/info/rfc7457},
+  author       = {Yaron Sheffer and Ralph Holz and Peter Saint-Andre},
+  title        = {{Summarizing Known Attacks on Transport Layer Security (TLS) and Datagram TLS (DTLS)}},
+  pagetotal    = 13,
+  year         = 2015,
+  month        = feb,
+  abstract     = {Over the last few years, there have been several serious attacks on Transport Layer Security (TLS), including attacks on its most commonly used ciphers and modes of operation. This document summarizes these attacks, with the goal of motivating generic and protocol-specific recommendations on the usage of TLS and Datagram TLS (DTLS).}
+}
+
+@misc{kia-equador-vulnerability,
+  key          = {CVE-2025-6029},
+  title        = {{CVE}-2025-6029: KIA-branded Aftermarket Generic Smart Keyless Entry System Replay Attack},
+  howpublished = {\url{https://www.cve.org/CVERecord?id=CVE-2025-6029}},
+  institution  = {The {MITRE} Corporation},
+  year         = {2025},
+  month        = jun,
+  day          = {13},
+  note         = {Accessed: 2025-11-09}
+}
+
+@article{boneh-crypto-book,
+  title   = {A Graduate Course in Applied Cryptography},
+  author  = {Boneh, Dan and Shoup, Victor},
+  year    = {2023},
+  month   = jan,
+  day     = {14},
+  edition = {Version 0.6},
+  url     = {https://toc.cryptobook.us/}
+}
+
+@book{ccs,
+  title     = {A calculus of communicating systems},
+  author    = {Milner, Robin},
+  year      = {1980},
+  publisher = {Springer Berlin, Heidelberg},
+  doi       = {10.1007/3-540-10235-3},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {92}
+}
+
+@article{hierarchy-of-equivalences,
+  title    = {A hierarchy of equivalences for asynchronous calculi},
+  journal  = {The Journal of Logic and Algebraic Programming},
+  volume   = {63},
+  number   = {1},
+  pages    = {131-173},
+  year     = {2005},
+  note     = {Special issue on The pi-calculus},
+  issn     = {1567-8326},
+  doi      = {https://doi.org/10.1016/j.jlap.2004.01.006},
+  url      = {https://www.sciencedirect.com/science/article/pii/S1567832604000074},
+  author   = {Cédric Fournet and Georges Gonthier},
+  keywords = {Concurrency, Observational equivalence, Reduction equivalence, Process calculi, Asynchronous -calculus, Join calculus, Barbed bisimulation, Coupled simulation, Fair testing, May testing},
+  abstract = {We generate a natural hierarchy of equivalences for asynchronous name-passing process calculi from simple variations on Milner and Sangiorgi's definition of weak barbed bisimulation. The π-calculus, used here, and the join calculus are examples of such calculi. We prove that barbed congruence coincides with Honda and Yoshida's reduction equivalence, and with asynchronous labeled bisimulation when the calculus includes name matching, thus closing those two conjectures. We also show that barbed congruence is coarser when only one barb is tested. For the π-calculus, it becomes a limit bisimulation, whereas for the join calculus, it coincides with both fair testing equivalence and with the weak barbed version of Sjödin and Parrow's coupled simulation.}
+}
+
+@inproceedings{adversarial-logic,
+  author    = {Vanegue, Julien},
+  editor    = {Singh, Gagandeep
+               and Urban, Caterina},
+  title     = {Adversarial Logic},
+  booktitle = {Static Analysis},
+  year      = {2022},
+  publisher = {Springer Nature Switzerland},
+  address   = {Cham},
+  pages     = {422--448},
+  abstract  = {We introduce Adversarial Logic, an extension of Incorrectness Logic [1] with an explicit Dolev-Yao [2] adversary to statically analyze the severity of security vulnerabilities in the under-approximate setting. Adversarial logic is built on the ability to separate logical facts known to the adversary from facts solely known to the program under analysis. This flavor of program incorrectness can be used to analyze software in which error behavior occurs at deeper levels of interaction between the program and its environment, such as subtle cases of information disclosure requiring multiple program executions to be uncovered. We introduce the Oscillating Bit Protocol, an example algorithm where such a vulnerability can be detected using adversarial logic while remaining elusive to other frameworks. We define a flavor of symbolic execution in which the adversary guides the introduction of symbolic variables and the checking of attack assertions. Additionally, we introduce equivalence testing, an under-approximate version of program equivalence only proven on specific program paths and used to extract differences between comparable implementations. We provide a denotational semantics for adversarial logic and prove its soundness, thereby guaranteeing that extracted attack paths are true positives.},
+  isbn      = {978-3-031-22308-2}
+}
+
+@article{relational-adversarial-logic,
+  title  = {Relational Adversarial Logic},
+  author = {Vanegue, Julien},
+  year   = {2023},
+  month  = {may},
+  day    = {03},
+  note   = {PREPRINT (Version 1) available at Research Square},
+  url    = {https://doi.org/10.21203/rs.3.rs-2874730/v1}
+}
+
+@inproceedings{trace-equivalence-decision,
+  author    = {Cheval, Vincent and Comon-Lundh, Hubert and Delaune, St\'{e}phanie},
+  title     = {Trace equivalence decision: negative tests and non-determinism},
+  year      = {2011},
+  isbn      = {9781450309486},
+  publisher = {Association for Computing Machinery},
+  address   = {New York, NY, USA},
+  url       = {https://doi.org/10.1145/2046707.2046744},
+  doi       = {10.1145/2046707.2046744},
+  abstract  = {We consider security properties of cryptographic protocols that can be modeled using the notion of trace equivalence. The notion of equivalence is crucial when specifying privacy-type properties, like anonymity, vote-privacy, and unlinkability.In this paper, we give a calculus that is close to the applied pi calculus and that allows one to capture most existing protocols that rely on classical cryptographic primitives. First, we propose a symbolic semantics for our calculus relying on constraint systems to represent infinite sets of possible traces, and we reduce the decidability of trace equivalence to deciding a notion of symbolic equivalence between sets of constraint systems. Second, we develop an algorithm allowing us to decide whether two sets of constraint systems are in symbolic equivalence or not. Altogether, this yields the first decidability result of trace equivalence for a general class of processes that may involve else branches and/or private channels (for a bounded number of sessions).},
+  booktitle = {Proceedings of the 18th ACM Conference on Computer and Communications Security},
+  pages     = {321–330},
+  numpages  = {10},
+  keywords  = {security protocols, constraint solving},
+  location  = {Chicago, Illinois, USA},
+  series    = {CCS '11}
+}

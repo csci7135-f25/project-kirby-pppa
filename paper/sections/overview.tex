@@ -1,0 +1,199 @@
+\section{Overview}
+\label{sec:overview}
+
+% Potential points to discuss (and prioritization):
+% (2) - Not enough to model knowledge as a set, need to also have indices since it matters not just what an adversary knows, but _how_ they know it.
+% (5) - Need to track who a message is sent to and from (can just use channel).
+% (3) - Adversary must be able to derive additional terms from their knowledge.
+% (4) - Set of terms an adversary can derive is unbounded.
+% (1) - Saying the knowledge has to be identical is too strong, instead it should be indistinguishable.
+% (6) - Indistinguishability is not a congruence relation.
+% (7) - Number of internal transitions don't matter as long as they lead to the same effects.
+% (8) - Bisimulation is too strong, instead we need observational bisimulation.
+
+% Note: the primary contributions of this paper are the concrete and collecting semantics, as well as the definition of adversarial equivalence, that lay the foundation for future work on abstract interpretation and automated verification.
+% This focus should be reflected in the overview.
+
+In this section we motivate the key modeling choices behind the definition of adversarial equivalence.
+
+\jedi{Consider a simple example where two protocols can be distinguished, but only if \emph{how} the attacker learns a fact is taken into account.}
+Consider the simple protocols shown in Figure~\ref{fig:example}.
+Protocol \DYAct{send_1_2} takes two messages as input and an output channel \DYAct{out}, generates a fresh key \DYActMath{$k$} that is not known to the adversary, and then proceeds to send out the encrypted first message \DYActMath{$enc(m_1, k)$}, followed by the encrypted second message \DYActMath{$enc(m_2, k)$}, followed by the first message $m_1$.
+When the red line is included, the protocol also sends out the key \DYActMath{$k$} used to encrypt the messages.
+Protocol \DYAct{send_2_1} is identical except that it sends out the encrypted second message first, followed by the encrypted first message.
+An adversary can distinguish between the two protocols when the red line (\DYActMath{send $k$ out}) is included, but not when the red line is excluded.
+
+\begin{figure}
+  \centering
+
+  \begin{subfigure}{0.49\textwidth}
+    \begin{lstlisting}[language=DYAct, mathescape=true, frame=none, xleftmargin=0pt, numbers=none, escapechar=@]
+    protocol send_1_2 ($m_1$, $m_2$, out) := {
+        $k$ := fresh();
+        send $enc(m_1, k)$ out;
+        send $enc(m_2, k)$ out;
+        send $m_1$ out;
+        @\textcolor{red}{send $k$ out}@
+    }
+    \end{lstlisting}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{0.49\textwidth}
+    \begin{lstlisting}[language=DYAct, mathescape=true, frame=none, xleftmargin=0pt, numbers=none, escapechar=@]
+    protocol send_2_1 ($m_1$, $m_2$, out) := {
+        $k$ := fresh();
+        send $enc(m_2, k)$ out;
+        send $enc(m_1, k)$ out;
+        send $m_1$ out;
+        @\textcolor{red}{send $k$ out}@
+    }
+    \end{lstlisting}
+  \end{subfigure}
+  \caption{Two protocols, specified in the \lang language from Section~\ref{sec:syntax}, that can be distinguished by an adversary when the red line is included, but behave equivalently when it is removed. They differ only in the order in which they send out their encrypted messages.}
+  \label{fig:example}
+\end{figure}
+
+\subsection{Distinguishing Traces}
+
+\jedi{An adversary can distinguish between two protocols if it can observe behavior or learn facts from one protocol that it could not have plausibly observed or learned from the other protocol.}
+An adversary can distinguish between two protocols if it can observe behavior or learn facts from one protocol that it could not have plausibly observed or learned from the other protocol.
+The focus for this paper is on an adversary that can observe messages sent over network channels, but the model can be generalized to other forms of information leakage.
+When a message is sent over the network, the adversary learns which channel the message was sent on and the contents of the message itself.
+From its current knowledge, the adversary can also derive new facts using its computational capabilities.
+Given its interactions, observations, and derivations, the adversary then only distinguishes between two protocols if the interactions, observations, and derivations \emph{must} have come interacting with one protocol, and not the other.
+
+\jedi{Observing different encrypted messages from protocols \DYAct{send_1_2} and \DYAct{send_2_1} is not sufficient to distinguish between them.}
+Simply observing different encrypted messages from protocols, such as the messages $enc(m_1, k)$ from protocol \DYAct{send_1_2} and $enc(m_2, k)$ from protocol \DYAct{send_2_1}, is not sufficient to distinguish between them.
+This is because a secure symmetric encryption schemes must provide a property known as semantic security.
+An encryption scheme is semantically secure if no adversary can determine which of two possible messages, of a given length, were used to produce a ciphertext, based only on knowing the ciphertext and messages.
+In a symbolic model of cryptography, this semantic security property is captured by defining an indistinguishability relation on terms ($\sim$, defined in Figure~\ref{subfig:model-indistinguishability}) in which two encrypted terms are always statically indistinguishable, regardless of their contents.
+Other statically indistinguishable terms include identical terms and pairs of indistinguishable terms.
+Note that encrypted terms are only \emph{statically} indistinguishable since the adversary may deduce more information about the encrypted messages, including their contents, by trying to decrypt the messages or supply the terms to a protocol.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{\textwidth}
+    \begin{mathpar}
+      k \in Keys \qquad d \in Data
+      \vspace{-1em}
+      \\
+      \begin{array}{lclcl}
+        t & \in & Terms & \Coloneqq & k
+        ~\ALT~ d
+        ~\ALT~ (t, t)
+        ~\ALT~ enc(t, k)
+        ~\ALT~ true
+        ~\ALT~ false
+        \\
+        f & \in & TermFunctions & \Coloneqq & dec(t, k)
+        ~\ALT~ fst(t)
+        ~\ALT~ snd(t)
+        ~\ALT~ eq(t, t)
+        \\
+      \end{array}
+    \end{mathpar}
+    \subcaption{Syntax for terms and term functions for a minimal symmetric encryption model.}
+    \label{subfig:model-syntax}
+  \end{subfigure}
+  \vfill
+  \begin{subfigure}{\textwidth}
+    \begin{mathpar}
+      \begin{array}{lcl}
+        dec(enc(t, k_e), k_d) & := & \text{if } k_d = k_d \text{ then } t \text{ else } \bot
+        \\ fst((t_1, t_2)) & := & t_1
+        \\ snd((t_1, t_2)) & := & t_2
+        \\ eq(t_1, t_2) & := & t_1 = t_2
+      \end{array}
+    \end{mathpar}
+    \subcaption{Denotation of term functions for minimal symmetric encryption model.}
+    \label{subfig:model-functions}
+  \end{subfigure}
+  \vfill
+  \begin{subfigure}{\textwidth}
+    \begin{mathpar}
+      \RULE{IndRefl}
+      { }
+      { t \sim t }
+
+      \RULE{IndPair}
+      {
+        t_1 \sim t_1'
+        \\ t_2 \sim t_2'
+      }
+      { (t_1, t_2) \sim (t_1', t_2') }
+
+      \RULE{IndEnc}
+      { }
+      {enc(t, k) \sim enc(t', k')}
+      % TODO(klinvill): What about a rule that fresh terms are also indistinguishable? This would model randomly sampled values that should not be attributable to either protocol without additional information/comparisons.
+    \end{mathpar}
+    \subcaption{Static term indistinguishability relation. Defines when an adversary cannot statically distinguish between terms from across executions.}
+    \label{subfig:model-indistinguishability}
+  \end{subfigure}
+  \caption{Minimal symbolic model of symmetric encryption.}
+  \label{fig:symmetric-encryption-model}
+\end{figure}
+
+\jedi{Just considering the set of terms an adversary learns is not sufficient, as both protocols leak the same set of terms.}
+Differentiating between protocol \DYAct{send_1_2} and protocol \DYAct{send_2_1} hinges on the distinguishable terms the adversary can derive after decrypting the first (or second) encrypted message using the learned key \DYActMath{$k$}.
+Therefore, a first attempt to capture relevant information to distinguish traces might be to capture the set of terms an adversary learns during a protocol execution or can derive from its knowledge.
+However, both protocols leak the same set of terms by the time the key is leaked, so any term the adversary can derive from one protocol it can also derive from the other.
+
+\jedi{An adversary's ability to differentiate between the two relies on information about \emph{how} and \emph{when} it learns a fact.}
+An adversary's ability to differentiate between the two protocols relies not just on \emph{if} it learns a fact, but on \emph{how} it learns that fact.
+Specifically, the adversary can differentiate between the two protocols by decrypting the first encrypted message (the $0^{th}$ term learned) with the leaked key (the $3^{rd}$ term learned), and comparing it to the leaked message (the $2^{nd}$ term learned).
+The key here is the action the adversary takes to derive a new term (decryption, and an equality test) and the index of the terms it uses.
+We therefore represent these same interactions using the labels $derive(dec, [0, 3])$ and $derive(eq, [2, 4])$ to indicate that the adversary used its decryption capability on the $0^{th}$ and $3^{rd}$ learned terms, followed by its equality comparison capability.
+Notably these labels capture exactly how the adversary derived new terms, in a knowledge-agnostic manner that applies to both protocols.
+After the sequence of derivations, the attacker will have derived $m_1$ and $true$ for the left protocol, and $m_2$ and $false$ for the right protocol.
+Even if the adversary does not originally know the first and second messages, it only needs to check the results of the equality test to distinguish between the two protocols.
+Specifically, $true \not\sim false$.
+
+\subsection{Adversary Capabilities}
+
+\jedi{An active network adversary controls and observes network traffic, and can derive new facts from their current knowledge.}
+In addition to being able to derive new facts from their current knowledge, an active network adversary is able to control and observe network traffic.
+An adversary's interactions with a protocol then consist of sending messages to the protocol over network channels, and observing messages sent by the protocol over network channels.
+To simplify modeling this control, network communication is modeled as protocol sends, that simply add sent messages to the adversary's knowledge, and adversary sends, that add terms from the adversary's knowledge to the network.
+Since the network is modeled using channels, adversary sends can be modeled using the label $send(c, i)$ to indicate the adversary is sending the $i^{th}$ term in its knowledge over channel $c$.
+
+\jedi{The adversary is parametric on its computational capabilities, but for this example, it suffices to consider a minimal symbolic model of symmetric encryption.}
+As previously mentioned, the adversary can derive new facts from its current knowledge using its computational capabilities.
+The adversary is parametric on these capabilities.
+For this example, it suffices to consider a minimal symbolic model of symmetric encryption (Figure~\ref{fig:symmetric-encryption-model}) where terms consist of keys, abstract data terms, pairs, encrypted terms, and boolean values.
+These terms can be manipulated using functions for decryption, pair projection, and equality testing (Figure~\ref{subfig:model-functions}).
+Decryption only succeeds if the correct key is provided, otherwise it returns $\bot$ to denote that decryption failed.
+Equality testing is necessary since any adversary should always be able to check if two terms it knows are the same.
+We refer to the constructors and term functions an adversary can use as its computational capabilities, denoted $\mathcal{A}$.
+Deriving a new term from $\mathcal{A}$'s knowledge is then modeled using the label $derive(f, \lst{i})$ where $f$ is a term derivation function such that $f \in \mathcal{A}$ and $\lst{i}$ is a list of indices into the knowledge to apply $f$ on.
+
+\subsection{System Model}
+
+\jedi{The complete system model then includes transitions the protocol can make and transitions the adversary can make.}
+The complete system model then includes four kinds of transitions modeling both protocol and adversary actions.
+The adversaries actions are:
+\begin{itemize}
+  \item sending known terms over network channels, with the label $send(c, i)$
+  \item deriving new terms from its knowledge, with the label $derive(f, \lst{i})$
+\end{itemize}
+while the protocol's actions are broken up into:
+\begin{itemize}
+  \item internal actions that produce no visible effects, e.g. \DYActMath{$k$ := fresh()}, with the label $\internal$
+  \item external actions that model sending a message over the adversary-controlled network by using the label $c$, and adding the sent term directly to the adversary's knowledge
+\end{itemize}
+
+\subsection{Checking Indistinguishability}
+
+\jedi{Determining that an adversary \emph{could never} distinguish between two protocols requires considering all adversarial interactions, observations, and derivations.}
+Determining that an adversary \emph{could never} distinguish between two protocols then requires considering all possible adversarial interactions, observations, and derivations.
+Two protocols are considered adversarially equivalent, with respect to adversary $\mathcal{A}$, if any possible sequence of interactions with and observations of one protocol can be matched by a sequence of interactions and observations of the other protocol, such that any term the adversary can derive could plausibly have been derived from the other protocol (i.e. is \emph{indistinguishable} with a term from the other protocol).
+Specifically, the sequence of interactions and observations is captured by the non-internal transition labels, denoted by $\alpha$.
+The sequence of observed and derived terms by the adversary is then tracked using the adversary's knowledge $\kappa$.
+Two protocols $\pi_l$ and $\pi_r$, with system state $(\alpha, \kappa_l, \_)$ and $(\alpha, \kappa_r, \_)$ respectively, are then adversarially equivalent if for every valid sequence of interactions and observations $\alpha$ and knowledge $\kappa_l$ derived for one protocol, there exists a knowledge $\kappa_r$ derived for the other protocol such that the two knowledges are statically equivalent (denoted $\kappa_l \approx \kappa_r$), and vice versa.
+Two knowledges are statically equivalent if they are pairwise indistinguishable, i.e. if for every index $i$, $\kappa_l[i] \sim \kappa_r[i]$.
+Note that while the knowledges must be statically equivalent, not identical, while the interactions and observations must be identical.
+These states are sufficient to reason about adversarial interaction properties, introduced in Section~\ref{subsec:adversarial-interaction-properties} and are therefore the basis for the collecting semantics defined in Section~\ref{subsec:collecting-semantics}.
+
+\jedi{The example \DYAct{send_1_2} and \DYAct{send_2_1} protocols are adversarially equivalent when the red line is excluded, since the collected properties cannot contain distinguishable knowledges without being able to decrypt the encrypted messages.}
+The example \DYAct{send_1_2} and \DYAct{send_2_1} protocols are adversarially equivalent when the red line is excluded, since the collected properties cannot contain distinguishable knowledges without being able to decrypt the encrypted messages.
+Verification of this property is left out of scope of this paper.

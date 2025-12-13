@@ -1,12 +1,16 @@
-MAIN=paper
-SRCS=$(wildcard *.tex *.sty *.bib)
+all:
+	pdflatex -shell-escape main
+	pdflatex -shell-escape main
+	bibtex main
+	bibtex main
+	pdflatex -shell-escape main
+	bibtex main
+	pdflatex -shell-escape main
 
-.PHONY: all clean reallyclearn
-all: ${MAIN}.pdf
+haste:
+	pdflatex -shell-escape main
+	open main.pdf
+
 clean:
-	latexmk -c
-reallyclean:
-	latexmk -C
-
-%.pdf: %.tex ${SRCS}
-	latexmk -pdf $<
+	rm *.aux *.bbl *.out *.log
+	rm supplementary_material/*.aux supplementary_material/*.bbl supplementary_material/*.out supplementary_material/*.log

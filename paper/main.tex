@@ -1,0 +1,113 @@
+\documentclass[acmsmall,screen,review,nonacm]{acmart}
+
+\citestyle{acmnumeric}
+
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+\usepackage{hyperref}
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\usepackage{amsmath}
+% Note: acmart defines symbols on its own, the ACM guidance is to not use amssymb.
+% \usepackage{amssymb}
+
+% Custom enumerate labels
+\usepackage{enumitem}
+
+% Code snippets
+\usepackage{listings}
+% Custom language styling for this paper
+\input{languages/listings}
+% Default listings style
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=flexible,
+  keepspaces=true
+}
+
+% Blocks of math notation
+\usepackage{mathpartir}
+
+% Includes xRightarrow
+\usepackage{mathtools}
+
+% Adds subfigure support
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{xcolor}
+
+% Boolean conditionals for comment system
+\usepackage{ifthen}
+
+% Handle spaces after the framework name
+\usepackage{xspace}
+
+% For defining commands with starred variants
+\usepackage{xparse}
+
+\usepackage{tikz}
+% Tikz Libraries
+\usetikzlibrary{
+  arrows.meta,      % For arrow styles
+  backgrounds,      % For drawing on a background layer
+  calc,             % For coordinate calculations
+  fit,              % To fit shapes around nodes
+  shapes.geometric  % For the ellipse shape
+}
+
+\begin{document}
+
+% Include custom commands
+\input{mydefs.tex}
+\input{languages/commands.tex}
+
+\title{Them's Just Semantics: Towards Reasoning About Adversarial Program Interaction}
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+
+\author{Kirby Linvill}
+\orcid{0000-0001-8835-3377}
+\affiliation{
+  \institution{University of Colorado Boulder}
+  \city{Boulder}
+  \state{Colorado}
+  \country{USA}
+}
+\email{kirby.linvill@colorado.edu}
+
+% \authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+
+\begin{abstract}
+  \input{sections/abstract.tex}
+\end{abstract}
+
+\maketitle
+
+\input{sections/introduction.tex}
+
+\input{sections/overview.tex}
+
+\input{sections/formalism.tex}
+
+\input{sections/related_work.tex}
+
+\input{sections/conclusion.tex}
+
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+\bibliographystyle{splncs04}
+\bibliography{main}
+
+\end{document}

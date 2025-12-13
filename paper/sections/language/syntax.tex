@@ -1,0 +1,58 @@
+\section{\lang: A Language for Protocol Specifications}
+\label{sec:syntax}
+
+In this section we introduce the syntax for \lang, a simple language for specifying protocols that can interact with an adversarially controlled network.
+The syntax for \lang is given in Figure~\ref{fig:language-syntax}.
+It is parametric on the set of terms $\mathcal{T}$ and functions $\mathcal{F}$ on those terms, defined by a model of cryptographic primitives.
+At the top level, a program consists of a set of protocol definitions ($\DYActMath{protocol} ~ x ~ (\lst{x}) := \{ p \}$).
+Each protocol definition provides a name for the protocol, a list of parameters that will be bound when the protocol is instantiated, and a body that may consist of variable assignments ($x := s$), handler definitions ($\DYActMath{handler} ~ x ~ \DYActMath{on} ~ s ~ \DYActMath{when} ~ e ~ \DYActMath{do} ~ s$), and subprotocol inclusions (\DYAct*{run x ($\lst{e}$)}).
+Protocols may contain other subprotocols to allow for easy composition.
+This naturally allows for defining protocols with multiple participants, where each participant is modeled as a separate subprotocol.
+
+\begin{figure*}[ht]
+  \begin{mathpar}
+    \begin{array}{lclcl}
+
+      d & \in & Definitions & \Coloneqq & \DYActMath{protocol} ~ x ~ (\lst{x}) := \{ p \}
+      ~\ALT~ d ; d
+      \\
+
+      p & \in & Bodies & \Coloneqq & s
+      ~\ALT~ p; p
+      ~\ALT~ \DYActMath{handler} ~ x ~ \DYActMath{on} ~ s ~ \DYActMath{when} ~ e ~ \DYActMath{do} ~ s
+      ~\ALT~ \DYActMath{run} ~ x ~ (\lst{e})
+      \\
+
+      s & \in & Statements & \Coloneqq & x := s
+      ~\ALT~ s ; s
+      ~\ALT~ \DYActMath{receive} ~ e
+      ~\ALT~ \DYActMath{send} ~ e \; e
+      ~\ALT~ \DYActMath{if} ~ e ~ \DYActMath{then} ~ s ~ \DYActMath{else} ~ s
+      ~\ALT~ \DYActMath{fresh}
+      ~\ALT~ e
+      \\
+
+      e & \in & Expressions & \Coloneqq & x
+      ~\ALT~ v
+      ~\ALT~ f(\lst{e})
+      \\
+
+      v & \in & Values & \Coloneqq & true
+      ~\ALT~ false
+      ~\ALT~ t
+      \\
+
+      % Model of cryptographic terms and operations
+      f & \in & TermFunctions & \Coloneqq & \mathcal{F}
+      \\
+      t & \in & Terms & \Coloneqq & \mathcal{T}
+
+    \end{array}
+  \end{mathpar}
+  \caption{\lang$(\mathcal{T}, \mathcal{F})$ Syntax. The language is parametric on a set of terms $\mathcal{T}$ and functions $\mathcal{F}$ that together represent cryptographic operations.}
+  \label{fig:language-syntax}
+\end{figure*}
+
+The rest of the syntax is fairly standard with one notable exception: the type of values is parametric on the type of terms.
+This allows the language to be instantiated with different algebraic terms, such as $enc(m,k)$ for symmetric encryption or $sign(m,sk)$ for digital signatures.
+The language requires the boolean values $true$ and $false$ which are used to evaluate control flow in the case of handler conditions and \DYAct{if} statements.

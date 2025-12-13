@@ -1,0 +1,114 @@
+\section{Adversarial Equivalence and Collecting Semantics}
+
+In this section we ultimately define when two \lang protocols are adversarially equivalent with respect to a given adversary $\mathcal{A}$.
+This definition relies on a collecting semantics for \lang protocols and adversaries (Section~\ref{subsec:collecting-semantics}) and the notion of adversarial interaction properties (Section~\ref{subsec:adversarial-interaction-properties}).
+
+\subsection{Adversarial Interaction Properties}
+\label{subsec:adversarial-interaction-properties}
+
+Adversarial equivalence is a relational property defined on two sets of adversarial interaction properties.
+Adversarial interaction properties are designed to capture sufficient information for two purposes: \textcircled{1} to model the interactions and observations an adversary has with a protocol and any information it can derive from those interactions, and \textcircled{2} to model system execution.
+The first purpose is necessary to reason about what an adversary has learned from interacting with a protocol, while the second purpose is necessary to reason about possible system executions that produce the relevant interactions, observations, and knowledge.
+
+\begin{definition}[Adversarial Interaction Property]
+  \label{def:adversarial-interaction-property}
+  An adversarial interaction property is a tuple of the form $(\alpha, \kappa, N, \Sigma)$ where $\alpha$ is a sequence of adversary interactions with and observable effects from a protocol, $\kappa$ is a sequence of values representing the adversary's current knowledge, $N$ is the current network state, and $\Sigma$ is the current protocol state.
+\end{definition}
+
+\subsection{Collecting Adversarial Interaction Properties}
+\label{subsec:collecting-semantics}
+
+All possible behaviors of a protocol $\pi$ interacting with an adversary $\mathcal{A}$ can be captured as a set of forward-reachable adversarial interaction properties $P$.
+This set is defined using a collecting semantics (Figure~\ref{fig:collecting-semantics}), denoted $\collect{\mathcal{A},\pi}$, that is defined with respect to a set of initial system states $P_0$ and set of external channels $\mathcal{C}$.
+Note that the system states $\langle \alpha, \kappa, N, \Sigma \rangle$ and adversarial interaction properties $(\alpha, \kappa, N, \Sigma)$ contain the same pieces of information and can be easily converted between.
+The collecting semantics is precisely defined as the least fixed point of the set of properties reachable via the system step relation (Section~\ref{subsec:system-semantics}) starting from the given initial system states.
+A least fixed point exists by the Knaster-Tarski fixed point theorem since the set of adversarial interaction properties forms a complete lattice under set inclusion, and the $reachNext$ function used below is monotonic.
+
+\begin{figure}[ht]
+  \caption{Collecting Semantics for \lang Protocols and Adversaries}
+  \label{fig:collecting-semantics}
+  \begin{mathpar}
+    reachNext ~\mathcal{C} ~\mathcal{A} ~\pi ~P_0 = \lambda~ P.~ P_0
+    ~\cup~ P
+    ~\cup~
+    \left\{
+      (\alpha', \kappa', N', \Sigma')
+      ~\left|~
+      \begin{array}{l}
+        \mathcal{C}, \mathcal{A}, \pi \vdash \langle \alpha, \kappa, N, \Sigma \rangle \systemstep \langle \alpha', \kappa', N', \Sigma' \rangle
+        \\ \land~
+        (\alpha, \kappa, N, \Sigma) \in P
+      \end{array}
+      \right.
+    \right\}
+
+    \\
+
+    \collect{\mathcal{A},\pi}
+    ~ \mathcal{C} ~P_0
+    =
+    \text{lfp} \left( reachNext ~\mathcal{C} ~\mathcal{A} ~\pi ~P_0 \right)
+  \end{mathpar}
+\end{figure}
+
+In general, the set of reachable adversarial interaction properties is unbounded since given even a single term and a tuple constructor, an adversary can generate an unbounded number of distinct terms by repeatedly applying the constructor.
+As a result the set of collected properties is typically unbounded and therefore not computable.
+Despite this restriction, the collecting semantics still provide a precise semantics upon which to define adversarial equivalence.
+The collecting semantics are further useful as the foundation upon which sound over-approximate abstractions can be defined.
+
+\subsection{Adversarial Equivalence}
+\label{subsec:adversarial-equivalence}
+
+% TODO(klinvill): The adversary is defined by the cryptographic model. Ideall $\mathcal{A}$ should also capture the term indistinguishability relation, not just the term derivation functions.
+Intuitively, two protocols $\Pi_1$ and $\Pi_2$ are adversarially equivalent for adversary $\mathcal{A}$ and external channels $\mathcal{C}$ when any observable behavior and derivable knowledge from one protocol can be matched for the other protocol, and vice versa.
+We use the notation $\Pi$ to refer to the packaged set of initial system states for a protocol, $P_0$, as well as the protocol value that contains the handlers for the protocol, $\pi$.
+The intuition for this matching in one direction (from protocol $\Pi_1$ to protocol $\Pi_2$) is formalized in the adversarial preorder relation (Definition~\ref{def:adversarial-preorder}), while adversarial equivalence (Definition~\ref{def:adversarial-equivalence}) simply requires the preorder to hold in both directions.
+
+Adversarial preorder between $\Pi_1$ and $\Pi_2$ holds when the exact same sequence of adversary interactions and observable effects $\alpha$ from $\Pi_1$ can be produced by $\Pi_2$, and the adversary's knowledge after those interactions are statically equivalent.
+The possible interactions, effects, and knowledge are captured by the set of forward-reachable adversarial interaction properties produced by the collecting semantics $\collect{\mathcal{A},\pi}$.
+The static equivalence condition captures the intuition that while an adversary can unambiguously determine how it interacted with a protocol, it may not be able to distinguish between different pieces of information it has derived from those interactions dependent on the model of cryptographic primitives.
+In particular, to model semantically secure encryption schemes, two encrypted messages are considered statically indistinguishable to an adversary, regardless of their contents.
+
+The definition relies on a static equivalence relation $\sim_\kappa$ between adversary knowledges $\kappa_1$ and $\kappa_2$, which is just the pairwise lifting of the indistinguishability relation $\sim_t$ on terms defined by the cryptographic model.
+Specifically, we say $\kappa_1 \sim_\kappa \kappa_2$ holds if and only if $\domain{\kappa_1} = \domain{\kappa_2}$ and for every index $i$, if $i \in \domain{\kappa_1}$ then $\kappa_1[i] \sim_t \kappa_2[i]$.
+We overload the notation $\sim$ to refer to either $\sim_\kappa$ or $\sim_t$ depending on the context.
+
+\begin{definition}[Adversarial Preorder]
+  \label{def:adversarial-preorder}
+  A protocol $\Pi_1$ $(\mathcal{A}, \mathcal{C})$-precedes $\Pi_2$, or equivalently $(\pi_1, P_{1,0})$ $(\mathcal{A}, \mathcal{C})$-precedes $(\pi_2, P_{2,0})$, denoted $\Pi_1 \testpreorder[\mathcal{A},\mathcal{C}] \Pi_2$, if for every forward-reachable adversarial interaction property $(\alpha, \kappa_1, N_1, \Sigma_1) \in \left( \collect{\mathcal{A}, \pi_1} ~\mathcal{C} ~P_{1, 0} \right)$ there exists a forward-reachable adversarial interaction property $(\alpha, \kappa_2, N_2, \Sigma_2) \in \left( \collect{\mathcal{A}, \pi_2} ~\mathcal{C} ~P_{2, 0} \right)$ such that $\kappa_1 \sim \kappa_2$.
+\end{definition}
+
+Since the adversarial preorder relation is parametric on the static equivalence relation $\sim_\kappa$ for the given cryptographic model, it is only a preorder if $\sim_\kappa$ is also a preorder.
+In practice, $\sim_\kappa$ should be an equivalence relation.
+
+\begin{lemma}
+  \label{lem:adversarial-preorder}
+  $\testpreorder[\mathcal{A}, \mathcal{C}]$ is a preorder (reflexive and transitive), if $\sim_\kappa$ is a preorder.
+\end{lemma}
+\begin{proof}
+  $\testpreorder[\mathcal{A}, \mathcal{C}]$ is trivially reflexive since $\sim_\kappa$ is reflexive (by virtue of being a preorder).
+  To show $\testpreorder[\mathcal{A}, \mathcal{C}]$ is also transitive, consider protocols $\Pi$, $\Pi'$, and $\Pi''$ such that $\Pi \testpreorder[\mathcal{A}, \mathcal{C}] \Pi'$ and $\Pi' \testpreorder[\mathcal{A}, \mathcal{C}] \Pi''$.
+  For every property $(\alpha, \kappa, N, \Sigma) \in \left( \collect{\mathcal{A}, \pi} ~\mathcal{C} ~P_0 \right)$, there must exist some property $(\alpha, \kappa', N', \Sigma') \in \left( \collect{\mathcal{A}, \pi'} ~\mathcal{C} ~P_0' \right)$ such that $\kappa \sim \kappa'$.
+  Similarly, for the property $(\alpha, \kappa', N', \Sigma') \in \left( \collect{\mathcal{A}, \pi'} ~\mathcal{C} ~P_0' \right)$, there must exist some property $(\alpha, \kappa'', N'', \Sigma'') \in \left( \collect{\mathcal{A}, \pi''} ~\mathcal{C} ~P_0'' \right)$ such that $\kappa' \sim \kappa''$.
+  Because $\sim_\kappa$ is transitive, $\kappa \sim \kappa'$, and $\kappa' \sim \kappa''$, then $\kappa \sim \kappa''$.
+  Since $(\alpha, \kappa'', N'', \Sigma'') \in \left( \collect{\mathcal{A}, \pi''} ~\mathcal{C} ~P_0'' \right)$ and $\kappa \sim \kappa''$, then $\Pi \testpreorder[\mathcal{A}, \mathcal{C}] \Pi''$.
+\end{proof}
+
+Given the definition of adversarial preorder, adversarial equivalence is simply defined as adversarial preorder in both directions.
+
+\begin{definition}[Adversarial Equivalence]
+  \label{def:adversarial-equivalence}
+  Two protocols $\Pi_1$ and $\Pi_2$ are \emph{adversarially equivalent} with respect to an adversary $\mathcal{A}$ for external channels $\mathcal{C}$, denoted $\Pi_1 \testequiv[\mathcal{A}, \mathcal{C}] \Pi_2$, if $\Pi_1 \testpreorder[\mathcal{A}, \mathcal{C}] \Pi_2$ and $\Pi_2 \testpreorder[\mathcal{A}, \mathcal{C}] \Pi_1$.
+\end{definition}
+
+\begin{lemma}
+  $\testequiv[\mathcal{A}, \mathcal{C}]$ is an equivalence relation, if $\sim_\kappa$ is an equivalence relation.
+\end{lemma}
+\begin{proof}
+  When $\sim_\kappa$ is an equivalence relation, then $\testpreorder[\mathcal{A}, \mathcal{C}]$ is reflexive and transitive by Lemma~\ref{lem:adversarial-preorder}.
+  The conjunction of preorders is reflexive and transitive, so $\testequiv[\mathcal{A}, \mathcal{C}]$ is reflexive and transitive.
+  $\Pi' \testequiv[\mathcal{A}, \mathcal{C}] \Pi$ is defined as $\Pi' \testpreorder[\mathcal{A}, \mathcal{C}] \Pi$ and $\Pi \testpreorder[\mathcal{A}, \mathcal{C}] \Pi'$.
+  Since conjunction is symmetric, this is equivalent to $\Pi \testpreorder[\mathcal{A}, \mathcal{C}] \Pi'$ and $\Pi' \testpreorder[\mathcal{A}, \mathcal{C}] \Pi$.
+  Therefore $\testequiv[\mathcal{A}, \mathcal{C}]$ is symmetric.
+  Since $\testequiv[\mathcal{A}, \mathcal{C}]$ is reflexive, transitive, and symmetric, it is an equivalence relation.
+\end{proof}
